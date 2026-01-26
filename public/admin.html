@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>Admin Dashboard</h1>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
+        </header>
+        
+        <!-- Clients View -->
+        <div id="clientsView" class="view active">
+            <div class="section-header">
+                <h2>Client Management</h2>
+                <button id="addClientBtn" class="btn-primary">Add Client</button>
+            </div>
+            
+            <div class="filter-section">
+                <label>Filter by Place:</label>
+                <select id="placeFilter">
+                    <option value="">All Places</option>
+                </select>
+            </div>
+            
+            <div id="clientsList" class="clients-grid"></div>
+        </div>
+        
+        <!-- Calendar View -->
+        <div id="calendarView" class="view">
+            <div class="section-header calendar-header-section">
+                <button id="backToClientsBtn" class="btn-back">← Back to Clients</button>
+                <h2>Food Calendar</h2>
+            </div>
+            <div id="calendarContainer"></div>
+            <div id="clientInfo" class="client-info"></div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Client Modal -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Add Client</h2>
+            <form id="clientForm">
+                <input type="hidden" id="clientId">
+                <div class="form-group">
+                    <label>Client Name</label>
+                    <input type="text" id="clientName" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="clientPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="clientAddress" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Place</label>
+                    <input type="text" id="clientPlace" required>
+                </div>
+                <div class="form-group">
+                    <label>Initial Days</label>
+                    <input type="number" id="clientDays" min="0" value="0">
+                </div>
+                <button type="submit" class="btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Add Days Modal -->
+    <div id="addDaysModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add Days</h2>
+            <form id="addDaysForm">
+                <input type="hidden" id="addDaysClientId">
+                <div class="form-group">
+                    <label>Number of Days to Add</label>
+                    <input type="number" id="daysToAdd" min="1" required>
+                </div>
+                <button type="submit" class="btn-primary">Add Days</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Delete Client Modal -->
+    <div id="deleteClientModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Delete Client</h2>
+            <p class="warning-text">⚠️ This action cannot be undone. Please enter your password to confirm deletion.</p>
+            <form id="deleteClientForm">
+                <input type="hidden" id="deleteClientId">
+                <div class="form-group">
+                    <label>Enter Admin Password</label>
+                    <input type="password" id="deletePassword" required placeholder="Enter your password">
+                </div>
+                <div id="deleteError" class="error-message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                    <button type="submit" class="btn-delete">Delete Client</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="auth.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
