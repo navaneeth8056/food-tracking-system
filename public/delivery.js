@@ -81,10 +81,22 @@ async function showClientDetails(clientId) {
     const client = clients.find(c => c._id === clientId);
     if (!client) return;
     
+    const mapUrl = client.mapLocation || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(client.address)}`;
+    
     document.getElementById('clientDetailsName').textContent = client.name;
     document.getElementById('clientDetailsPhone').textContent = client.phone;
     document.getElementById('clientDetailsAddress').textContent = client.address;
     document.getElementById('clientDetailsPlace').textContent = client.place;
+    
+    // Update or create map link
+    let mapLinkDiv = document.getElementById('clientDetailsMapLink');
+    if (!mapLinkDiv) {
+        mapLinkDiv = document.createElement('p');
+        mapLinkDiv.id = 'clientDetailsMapLink';
+        mapLinkDiv.style.marginTop = '15px';
+        document.querySelector('.client-details').appendChild(mapLinkDiv);
+    }
+    mapLinkDiv.innerHTML = `<a href="${mapUrl}" target="_blank" class="map-link">📍 Get Directions on Google Maps</a>`;
     
     document.getElementById('clientDetailsModal').style.display = 'block';
 }

@@ -28,6 +28,7 @@ const clientSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   address: { type: String, required: true },
   place: { type: String, required: true },
+  mapLocation: { type: String, default: '' },
   totalDays: { type: Number, default: 0 },
   remainingDays: { type: Number, default: 0 },
   foodRecords: [{

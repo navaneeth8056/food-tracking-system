@@ -84,12 +84,19 @@ function displayClients() {
     const container = document.getElementById('clientsList');
     const filtered = getFilteredClients();
     
-    container.innerHTML = filtered.map(client => `
+    container.innerHTML = filtered.map(client => {
+        const mapUrl = client.mapLocation || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(client.address)}`;
+        return `
         <div class="client-card">
             <h3>${client.name}</h3>
             <p><strong>Phone:</strong> ${client.phone}</p>
             <p><strong>Address:</strong> ${client.address}</p>
             <p><strong>Place:</strong> ${client.place}</p>
+            <p style="margin: 10px 0;">
+                <a href="${mapUrl}" target="_blank" class="map-link-small">
+                    📍 Get Directions
+                </a>
+            </p>
             <div class="days-info">
                 <span class="days-badge days-total">Total: ${client.totalDays}</span>
                 <span class="days-badge ${client.remainingDays < 5 ? 'days-low' : 'days-remaining'}">
@@ -103,7 +110,8 @@ function displayClients() {
                 <button class="btn-small btn-delete" onclick="deleteClient('${client._id}')">Delete</button>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Filter clients
@@ -130,6 +138,7 @@ function openClientModal(client = null) {
         document.getElementById('clientPhone').value = client.phone;
         document.getElementById('clientAddress').value = client.address;
         document.getElementById('clientPlace').value = client.place;
+        document.getElementById('clientMapLocation').value = client.mapLocation || '';
         document.getElementById('clientDays').value = client.totalDays;
     } else {
         title.textContent = 'Add Client';
@@ -143,11 +152,27 @@ function openClientModal(client = null) {
 // Save client
 async function saveClient(e) {
     e.preventDefault();
+    const address = document.getElementById('clientAddress').value;
+    const mapLocationInput = document.getElementById('clientMapLocation').value.trim();
+    
+    // Generate Google Maps URL if not provided
+    let mapLocation = mapLocationInput;
+    if (!mapLocation) {
+        // Auto-generate from address
+        const encodedAddress = encodeURIComponent(address);
+        mapLocation = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+    } else if (!mapLocation.startsWith('http')) {
+        // If it's just an address, convert to Google Maps URL
+        const encodedAddress = encodeURIComponent(mapLocation);
+        mapLocation = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+    }
+    
     const formData = {
         name: document.getElementById('clientName').value,
         phone: document.getElementById('clientPhone').value,
-        address: document.getElementById('clientAddress').value,
+        address: address,
         place: document.getElementById('clientPlace').value,
+        mapLocation: mapLocation,
         totalDays: parseInt(document.getElementById('clientDays').value) || 0,
         remainingDays: parseInt(document.getElementById('clientDays').value) || 0
     };
@@ -308,6 +333,7 @@ async function loadClientCalendar(clientId) {
 
 // Display client info
 function displayClientInfo(client) {
+    const mapUrl = client.mapLocation || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(client.address)}`;
     const infoDiv = document.getElementById('clientInfo');
     infoDiv.innerHTML = `
         <h3>${client.name}</h3>
@@ -315,6 +341,11 @@ function displayClientInfo(client) {
         <p><strong>Address:</strong> ${client.address}</p>
         <p><strong>Place:</strong> ${client.place}</p>
         <p><strong>Total Days:</strong> ${client.totalDays} | <strong>Remaining Days:</strong> ${client.remainingDays}</p>
+        <p style="margin-top: 15px;">
+            <a href="${mapUrl}" target="_blank" class="map-link">
+                📍 Open in Google Maps
+            </a>
+        </p>
     `;
 }
 
