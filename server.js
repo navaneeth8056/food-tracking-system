@@ -169,15 +169,33 @@ app.post('/api/clients/:id/food-status', authenticateToken, async (req, res) => 
     const client = await Client.findById(req.params.id);
     if (!client) return res.status(404).json({ error: 'Client not found' });
     
+    // Find existing record for this date
+    const existingRecord = client.foodRecords.find(r => r.date === date);
+    const previousStatus = existingRecord ? existingRecord.status : null;
+    
     // Remove existing record for this date if any
     client.foodRecords = client.foodRecords.filter(r => r.date !== date);
     
     // Add new record
     client.foodRecords.push({ date, status });
     
-    // Update remaining days if status is 'received'
-    if (status === 'received' && client.remainingDays > 0) {
-      client.remainingDays -= 1;
+    // Update remaining days based on status change
+    if (status === 'received') {
+      // Marking as received (green)
+      // Only reduce if it wasn't already marked as received
+      if (previousStatus !== 'received' && client.remainingDays > 0) {
+        client.remainingDays -= 1;
+      }
+    } else if (status === 'not_received') {
+      // Marking as not received (red)
+      // If it was previously received, add back the day
+      if (previousStatus === 'received') {
+        // Add back the day, but don't exceed totalDays
+        if (client.remainingDays < client.totalDays) {
+          client.remainingDays += 1;
+        }
+      }
+      // If it was already not_received or no previous record, no change
     }
     
     await client.save();

@@ -115,6 +115,30 @@
         </div>
     </div>
     
+    <!-- Food Status Selection Modal -->
+    <div id="foodStatusModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Select Food Status</h2>
+            <p id="selectedDateText" style="margin-bottom: 20px; color: #666;"></p>
+            <div class="status-options">
+                <button class="status-btn status-green" onclick="setFoodStatus('received')">
+                    <span style="font-size: 24px; display: block; margin-bottom: 5px;">✓</span>
+                    <strong>Received (Green)</strong>
+                    <small style="display: block; margin-top: 5px;">Reduces remaining days</small>
+                </button>
+                <button class="status-btn status-red" onclick="setFoodStatus('not_received')">
+                    <span style="font-size: 24px; display: block; margin-bottom: 5px;">✗</span>
+                    <strong>Not Received (Red)</strong>
+                    <small style="display: block; margin-top: 5px;">No change to days</small>
+                </button>
+            </div>
+            <div style="margin-top: 20px;">
+                <button type="button" class="btn-cancel" onclick="closeFoodStatusModal()" style="width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
     <script src="auth.js"></script>
     <script src="admin.js"></script>
 </body>

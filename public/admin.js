@@ -32,6 +32,8 @@ function setupEventListeners() {
             const modal = e.target.closest('.modal');
             if (modal.id === 'deleteClientModal') {
                 closeDeleteModal();
+            } else if (modal.id === 'foodStatusModal') {
+                closeFoodStatusModal();
             } else {
                 modal.style.display = 'none';
             }
@@ -46,6 +48,12 @@ function setupEventListeners() {
     
     // Delete client form
     document.getElementById('deleteClientForm').addEventListener('submit', confirmDeleteClient);
+    
+    // Food status modal close
+    const foodStatusModal = document.getElementById('foodStatusModal');
+    if (foodStatusModal) {
+        foodStatusModal.querySelector('.close').addEventListener('click', closeFoodStatusModal);
+    }
 }
 
 // Load clients
@@ -415,45 +423,62 @@ function changeMonth(direction) {
     }
 }
 
-// Toggle food status
-async function toggleFoodStatus(dateStr) {
+let selectedDateForStatus = null;
+
+// Open food status selection modal
+function toggleFoodStatus(dateStr) {
     if (!currentClientId) return;
+    
+    selectedDateForStatus = dateStr;
+    
+    // Format date for display
+    const date = new Date(dateStr + 'T00:00:00');
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = date.toLocaleDateString('en-US', options);
+    
+    document.getElementById('selectedDateText').textContent = `Select status for ${formattedDate}:`;
+    document.getElementById('foodStatusModal').style.display = 'block';
+}
+
+// Set food status
+async function setFoodStatus(status) {
+    if (!currentClientId || !selectedDateForStatus) return;
     
     try {
         const response = await apiRequest(`/clients/${currentClientId}`);
         if (!response) return;
         const client = await response.json();
         
-        const record = client.foodRecords.find(r => r.date === dateStr);
-        let newStatus;
-        
-        // Determine new status
-        if (!record) {
-            newStatus = 'received';
-        } else if (record.status === 'received') {
-            newStatus = 'not_received';
-        } else {
-            newStatus = 'received';
-        }
-        
         // Check if trying to mark as received when no days remaining
-        if (newStatus === 'received' && client.remainingDays <= 0) {
-            alert('No days remaining! Please add days first before marking food as received.');
-            return;
+        if (status === 'received' && client.remainingDays <= 0) {
+            const record = client.foodRecords.find(r => r.date === selectedDateForStatus);
+            // Only show warning if it's a new mark (not changing from red to green)
+            if (!record || record.status !== 'not_received') {
+                alert('No days remaining! Please add days first before marking food as received.');
+                closeFoodStatusModal();
+                return;
+            }
         }
         
         const updateResponse = await apiRequest(`/clients/${currentClientId}/food-status`, {
             method: 'POST',
-            body: JSON.stringify({ date: dateStr, status: newStatus })
+            body: JSON.stringify({ date: selectedDateForStatus, status: status })
         });
         
         if (updateResponse && updateResponse.ok) {
+            closeFoodStatusModal();
             await loadClientCalendar(currentClientId);
             await loadClients();
         }
     } catch (error) {
         alert('Error updating food status: ' + error.message);
     }
+}
+
+// Close food status modal
+function closeFoodStatusModal() {
+    document.getElementById('foodStatusModal').style.display = 'none';
+    selectedDateForStatus = null;
 }
 
 // Make functions global
@@ -464,3 +489,5 @@ window.deleteClient = deleteClient;
 window.closeDeleteModal = closeDeleteModal;
 window.changeMonth = changeMonth;
 window.toggleFoodStatus = toggleFoodStatus;
+window.setFoodStatus = setFoodStatus;
+window.closeFoodStatusModal = closeFoodStatusModal;

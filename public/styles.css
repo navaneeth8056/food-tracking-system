@@ -544,6 +544,59 @@ header h1 {
     background: #FF5252;
 }
 
+/* Food Status Selection Modal */
+.status-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.status-btn {
+    padding: 20px;
+    border: 3px solid;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    background: white;
+    font-size: 16px;
+}
+
+.status-btn.status-green {
+    border-color: #00ED64;
+    color: #00ED64;
+}
+
+.status-btn.status-green:hover {
+    background: #00ED64;
+    color: #001E2B;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 237, 100, 0.3);
+}
+
+.status-btn.status-red {
+    border-color: #FF6B6B;
+    color: #FF6B6B;
+}
+
+.status-btn.status-red:hover {
+    background: #FF6B6B;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.status-btn strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.status-btn small {
+    color: #666;
+    font-size: 12px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     body {
@@ -715,5 +768,15 @@ header h1 {
         font-size: 12px;
         width: 100%;
         margin-top: 8px;
+    }
+    
+    .status-options {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .status-btn {
+        padding: 15px;
+        font-size: 14px;
     }
 }
